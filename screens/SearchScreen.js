@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { View, FlatList, StyleSheet, ActivityIndicator,TouchableOpacity } from "react-native";
 import { SearchBar, ListItem } from "@rneui/themed";
 import citydata from "../data/citydata";
 import filter from "lodash.filter";
@@ -10,6 +10,7 @@ const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [fullData, setFullData] = useState([]);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     setFullData(citydata);
@@ -50,12 +51,14 @@ const SearchScreen = () => {
         placeholderTextColor="#fefefe"
         leftIconContainerStyle={{ display: "none" }}
         inputStyle={{ color: "#fefefe" }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#66666B" />
       ) : (
         <FlatList
-          data={filteredData}
+          data={isFocused ? fullData : filteredData}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.itemWrapper}>
@@ -65,6 +68,8 @@ const SearchScreen = () => {
                   navigation.navigate("Weather", {
                     cityName: item.name,
                     temperature: item.temperature,
+                    state: item.state,
+                    forecast: item.forecast
                   })
                 }
               >

@@ -1,35 +1,68 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, FlatList, ImageBackground } from "react-native";
 import { Icon } from "@rneui/themed";
 
 const WeatherScreen = ({ route }) => {
-  const { cityName, temperature, state } = route.params;
+  const { cityName, temperature, state, forecast } = route.params;
 
   const getBackgroundColor = (temp) => {
-    if (temp > 30) return "#D3634A";
-    else if (temp > 20) return "#F7C250";
-    else if (temp > 10) return "#65E080";
-    else return "#559EDF";
+    if (temp > 30) return "#f08080";
+    else if (temp > 20) return "#fffacd";
+    else if (temp > 10) return "#8fbc8f";
+    else return "#add8e6";
   };
 
   const getIcon = (stt) => {
     if (stt === "Sunny")
-      return <Icon name="sunny-outline" size={50} color="white" />;
+      return (
+        <Icon name="sunny-outline" type="ionicon" size={40} color="white" />
+      );
     else if (stt === "Cloudy")
-      return <Icon name="cloud-outline" size={50} color="white" />;
-    else if (stt === "Stormy")
-      return <Icon name="thunderstorm-outline" size={50} color="white" />;
-    else return <Icon name="rowing" />;
+      return (
+        <Icon name="cloud-outline" type="ionicon" size={40} color="white" />
+      );
+    else if (stt === "Rainy")
+      return (
+        <Icon name="rainy-outline" type="ionicon" size={40} color="white" />
+      );
+    else if (stt === "Windy")
+      return (
+        <Icon
+          name="weather-windy"
+          type="material-community"
+          size={40}
+          color="white"
+        />
+      );
+    else
+      return (
+        <Icon name="snow-outline" type="ionicon" size={40} color="white" />
+      );
   };
 
+  const renderItem = ({ item }) => (
+    <View style={styles.forecastContainer}>
+      {getIcon(item.state)}
+      <Text style={styles.temperatureText}>{item.temperature}°C</Text>
+    </View>
+  );
+
   const backgroundColor = getBackgroundColor(temperature);
-  const weatherIcon = getIcon(state);
 
   return (
+    
     <View style={[styles.container, { backgroundColor }]}>
-      {weatherIcon}
-      <Text style={styles.title}>{cityName}</Text>
-      <Text style={styles.temperature}>{temperature}°C</Text>
+      <View style={styles.currentWeather}>
+        {getIcon(state)}
+        <Text style={styles.nameOfCity}>{cityName}</Text>
+        <Text style={styles.temperature}>{temperature}°C</Text>
+      </View>
+      <FlatList
+        data={forecast}
+        renderItem={renderItem}
+        horizontal
+        style={styles.forecastList}
+      />
     </View>
   );
 };
@@ -41,13 +74,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
+  day: {
+    fontSize: 18,
+  },
+  currentWeather: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  nameOfCity: {
+    fontSize: 36,
+    color: "white"
   },
   temperature: {
-    fontSize: 24,
+    fontSize: 32,
     marginTop: 20,
+    color: "white"
+  },
+  forecastList: {
+    flex: 1,
+    width: "75%",
+    
+  },
+  forecastContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+  },
+  
+  temperatureText: {
+    fontSize: 16,
+    marginTop: 5,
   },
 });
 
