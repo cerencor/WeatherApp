@@ -1,43 +1,81 @@
-import React, { useState } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { View, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { SearchBar, ListItem } from "@rneui/themed";
+import citydata from "../data/citydata";
+import filter from "lodash.filter";
+import { useNavigation } from '@react-navigation/native';
 
 const SearchScreen = () => {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [fullData, setFullData] = useState([]);
 
-  const handleSearch = (text) => {
-    setQuery(text);
+  useEffect(() => {
+    setFullData(citydata);
+    setFilteredData(citydata);
+  }, []);
 
-    // Implement your search logic here
-    // For demonstration purposes, we'll use a static list
-    const data = [
-      { id: '1', name: 'Item 1' },
-      { id: '2', name: 'Item 2' },
-      { id: '3', name: 'Item 3' },
-    ];
+  const navigation = useNavigation();
 
-    const filteredData = data.filter((item) =>
-      item.name.toLowerCase().includes(text.toLowerCase())
-    );
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const formattedQuery = query.toLowerCase();
+    const filteredData = filter(fullData, (city) => {
+      return contains(city, formattedQuery);
+    });
+    setFilteredData(filteredData);
+  };
 
-    setResults(filteredData);
+  const contains = ({ name }, query) => {
+    if (name.toLowerCase().includes(query)) {
+      return true;
+    }
+    return false;
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Search..."
-        value={query}
-        onChangeText={handleSearch}
+      <SearchBar
+        placeholder="Search"
+        clearButtonMode="always"
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={searchQuery}
+        onChangeText={(query) => handleSearch(query)}
+        lightTheme={true}
+        round={true}
+        containerStyle={styles.searchBarContainer}
+        inputContainerStyle={styles.searchBarInputContainer}
+        placeholderTextColor="#fefefe"
+        leftIconContainerStyle={{ display: "none" }}
+        inputStyle={{ color: "#fefefe" }}
       />
-      <FlatList
-        data={results}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Text style={styles.item}>{item.name}</Text>
-        )}
-      />
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={filteredData}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.itemWrapper}>
+              <ListItem
+                containerStyle={styles.itemContainer}
+                onPress={() =>
+                  navigation.navigate("Weather", {
+                    cityName: item.name,
+                    temperature: item.temperature,
+                  })
+                }
+              >
+                <ListItem.Content>
+                  <ListItem.Title>{item.name}</ListItem.Title>
+                </ListItem.Content>
+              </ListItem>
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -45,20 +83,35 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#EFB747",
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 8,
+  searchBarContainer: {
+    backgroundColor: "#EFB747",
+    borderTopColor: "transparent",
+    borderBottomColor: "transparent",
   },
-  item: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+  searchBarInputContainer: {
+    backgroundColor: "#DFAC45", // Change this to your desired input container color
+  },
+  itemWrapper: {
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#DFAC45",
+    alignSelf: "flex-start",
+    maxWidth: "90%",
+    borderRadius: 300,
+    padding: 10,
+    flexShrink: 1,
+  },
+  textCityName: {
+    fontSize: 17,
+    marginLeft: 10,
+    fontWeight: "600",
+    placeholderTextColor: "#fefefe",
   },
 });
 

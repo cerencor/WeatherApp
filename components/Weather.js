@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Weather = () => {
   return (
@@ -10,8 +11,7 @@ const Weather = () => {
         <Text style={styles.tempText}>Temperature˚</Text>
       </View>
       <View style={styles.bodyContainer}>
-        <Text style={styles.title}>So Sunny</Text>
-        <Text style={styles.subtitle}>It hurts my eyes!</Text>
+        <Text style={styles.title}>Sunny</Text>
       </View>
     </View>
   );
