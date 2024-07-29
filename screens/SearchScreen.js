@@ -48,7 +48,7 @@ const SearchScreen = () => {
         round={true}
         containerStyle={styles.searchBarContainer}
         inputContainerStyle={styles.searchBarInputContainer}
-        placeholderTextColor="#fefefe"
+        placeholderTextColor="#E9E9E9"
         leftIconContainerStyle={{ display: "none" }}
         inputStyle={{ color: "#fefefe" }}
         onFocus={() => setIsFocused(true)}
@@ -74,7 +74,7 @@ const SearchScreen = () => {
                 }
               >
                 <ListItem.Content>
-                  <ListItem.Title>{item.name}</ListItem.Title>
+                  <ListItem.Title style={styles.textCityName}>{item.name}</ListItem.Title>
                 </ListItem.Content>
               </ListItem>
             </View>
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     marginLeft: 10,
     fontWeight: "600",
-    placeholderTextColor: "#fefefe",
+    color: "#fefefe",
   },
 });
 
