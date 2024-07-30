@@ -27,7 +27,7 @@ const citydata = [
   },
   {
     id: '3',
-    name: 'Bursa',
+    name: 'Çanakkale',
     state: 'Cloudy',
     temperature: '17',
     forecast: [

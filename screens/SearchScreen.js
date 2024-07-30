@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList, StyleSheet, ActivityIndicator,TouchableOpacity } from "react-native";
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { SearchBar, ListItem } from "@rneui/themed";
 import citydata from "../data/citydata";
 import filter from "lodash.filter";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 const SearchScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,8 +28,9 @@ const SearchScreen = () => {
   const handleSearch = (query) => {
     setSearchQuery(query);
     const formattedQuery = query.toLowerCase();
-    const filteredData = filter(fullData, (city) => {
-      return contains(city, formattedQuery);
+    console.log("formatted query: ", formattedQuery);
+    const filteredData = fullData.filter((city) => {
+      return city.name.toLowerCase('tr-TR').includes(formattedQuery);
     });
     setFilteredData(filteredData);
   };
@@ -34,6 +41,7 @@ const SearchScreen = () => {
     }
     return false;
   };
+
 
   return (
     <View style={styles.container}>
@@ -58,7 +66,7 @@ const SearchScreen = () => {
         <ActivityIndicator size="large" color="#66666B" />
       ) : (
         <FlatList
-          data={isFocused ? fullData : filteredData}
+          data={filteredData}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.itemWrapper}>
@@ -69,12 +77,14 @@ const SearchScreen = () => {
                     cityName: item.name,
                     temperature: item.temperature,
                     state: item.state,
-                    forecast: item.forecast
+                    forecast: item.forecast,
                   })
                 }
               >
                 <ListItem.Content>
-                  <ListItem.Title style={styles.textCityName}>{item.name}</ListItem.Title>
+                  <ListItem.Title style={styles.textCityName}>
+                    {item.name}
+                  </ListItem.Title>
                 </ListItem.Content>
               </ListItem>
             </View>
@@ -96,7 +106,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "transparent",
   },
   searchBarInputContainer: {
-    backgroundColor: "#DFAC45", // Change this to your desired input container color
+    backgroundColor: "#DFAC45",
   },
   itemWrapper: {
     alignItems: "center",
