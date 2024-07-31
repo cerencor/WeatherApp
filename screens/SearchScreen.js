@@ -8,8 +8,10 @@ import {
 } from "react-native";
 import { SearchBar, ListItem } from "@rneui/themed";
 import citydata from "../data/citydata";
-import filter from "lodash.filter";
+//import filter from "lodash.filter";
 import { useNavigation } from "@react-navigation/native";
+
+import {fetchWeather} from '../util/http';
 
 const SearchScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,8 +21,12 @@ const SearchScreen = () => {
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    setFullData(citydata);
-    setFilteredData(citydata);
+    async function getWeather(){
+      const weather = await fetchWeather();
+    }
+    getWeather();
+    //setFullData(citydata);
+    //setFilteredData(citydata);
   }, []);
 
   const navigation = useNavigation();
