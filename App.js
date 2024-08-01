@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import SearchScreen from './screens/SearchScreen';
 import WeatherScreen from './screens/WeatherScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { API_KEY } from './services/WeatherAPIKey';
+
 
 const Stack = createNativeStackNavigator();
 

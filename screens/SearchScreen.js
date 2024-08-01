@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SearchBar, ListItem } from "@rneui/themed";
-import citydata from "../data/citydata";
+//import citydata from "../data/citydata";
 //import filter from "lodash.filter";
 import { useNavigation } from "@react-navigation/native";
 
@@ -25,6 +25,8 @@ const SearchScreen = () => {
       const weather = await fetchWeather();
     }
     getWeather();
+    setFullData(weather);
+    setFilteredData(weather);
     //setFullData(citydata);
     //setFilteredData(citydata);
   }, []);
@@ -73,7 +75,7 @@ const SearchScreen = () => {
       ) : (
         <FlatList
           data={filteredData}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.itemWrapper}>
               <ListItem
