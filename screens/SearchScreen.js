@@ -36,6 +36,7 @@ const SearchScreen = () => {
   const handleSearch = (query) => {
     setSearchQuery(query);
     const formattedQuery = query.toLowerCase();
+    console.log("formatted query: ", formattedQuery);
     const filteredData = fullData.filter((city) => {
       return city.name.toLowerCase('tr-TR').includes(formattedQuery);
     });
