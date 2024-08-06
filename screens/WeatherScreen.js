@@ -21,9 +21,10 @@ const WeatherScreen = ({ route }) => {
   }, [cityName]);
 
   const fetchWeather = async (cityName) => {
-    const weatherResponse = await fetch(
-      `https://api.openweathermap.org/data/3.0/onecall?lat=33.44&lon=94.04&exclude=hourly&appid={API_KEY}`
+    const weatherResponse = await axios(
+      `https://api.openweathermap.org/data/3.0/onecall?lat=33.44&lon=-94.04&exclude=hourly&appid={API_KEY}`
     );
+    //https://api.openweathermap.org/data/3.0/onecall?lat=33.44&lon=-94.04&exclude=hourly,daily&appid={API key}
     //https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={API key}
     //const weatherResponse = await axios.get(
     //`https://api.openweathermap.org/data/3.0/weather?q=${cityName}&appid=${API_KEY}&units=metric`
