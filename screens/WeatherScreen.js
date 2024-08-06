@@ -22,10 +22,10 @@ const WeatherScreen = ({ route }) => {
 
   const fetchWeather = async (cityName) => {
     const weatherResponse = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`
+      `https://api.openweathermap.org/data/3.0/weather?q=${cityName}&appid=${API_KEY}&units=metric`
     );
     //const weatherResponse = await axios.get(
-      //`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`
+      //`https://api.openweathermap.org/data/3.0/weather?q=${cityName}&appid=${API_KEY}&units=metric`
     //);
     const weatherJson = await weatherResponse.json();
     console.log("Weather response:", weatherJson);
