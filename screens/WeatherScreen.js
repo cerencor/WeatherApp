@@ -1,9 +1,38 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, ImageBackground } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { Icon } from "@rneui/themed";
+import { API_KEY } from "../services/WeatherAPIKey";
 
 const WeatherScreen = ({ route }) => {
-  const { cityName, temperature, state, forecast } = route.params;
+  const { cityName } = route.params;
+
+  const [temperature, setTemperature] = useState(null);
+  //const [state, setState] = useState(null);
+  //const [forecast, setForecast] = useState([]);
+
+  useEffect(() => {
+    fetchWeather(cityName);
+  }, [cityName]);
+
+  const fetchWeather = async (cityName) => {
+    const weatherResponse = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`
+    );
+    //const weatherResponse = await axios.get(
+      //`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`
+    //);
+    const weatherJson = await weatherResponse.json();
+    console.log("Weather response:", weatherJson);
+
+    setTemperature(weatherJson.main.temp);
+    //setState(weatherJson.weather[0].main);
+  };
 
   const getBackgroundColor = (temp) => {
     if (temp > 30) return "#f08080";
@@ -50,19 +79,26 @@ const WeatherScreen = ({ route }) => {
   const backgroundColor = getBackgroundColor(temperature);
 
   return (
-    
     <View style={[styles.container, { backgroundColor }]}>
-      <View style={styles.currentWeather}>
-        {getIcon(state)}
-        <Text style={styles.nameOfCity}>{cityName}</Text>
-        <Text style={styles.temperature}>{temperature}°C</Text>
-      </View>
-      <FlatList
-        data={forecast}
-        renderItem={renderItem}
-        horizontal
-        style={styles.forecastList}
-      />
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : error ? (
+        <Text>{error}</Text>
+      ) : (
+        <>
+          <View style={styles.currentWeather}>
+            {getIcon(state)}
+            <Text style={styles.nameOfCity}>{cityName}</Text>
+            <Text style={styles.temperature}>{temperature}°C</Text>
+          </View>
+          <FlatList
+            data={forecast}
+            renderItem={renderItem}
+            horizontal
+            style={styles.forecastList}
+          />
+        </>
+      )}
     </View>
   );
 };
@@ -74,9 +110,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  day: {
-    fontSize: 18,
-  },
   currentWeather: {
     flex: 1,
     justifyContent: "center",
@@ -84,17 +117,16 @@ const styles = StyleSheet.create({
   },
   nameOfCity: {
     fontSize: 36,
-    color: "white"
+    color: "white",
   },
   temperature: {
     fontSize: 32,
     marginTop: 20,
-    color: "white"
+    color: "white",
   },
   forecastList: {
     flex: 1,
     width: "75%",
-    
   },
   forecastContainer: {
     flex: 1,
@@ -102,10 +134,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 10,
   },
-  
   temperatureText: {
     fontSize: 16,
     marginTop: 5,
+    color: "white",
   },
 });
 
