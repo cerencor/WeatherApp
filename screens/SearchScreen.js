@@ -4,14 +4,11 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
-  TouchableOpacity,
 } from "react-native";
 import { SearchBar, ListItem } from "@rneui/themed";
-//import citydata from "../data/citydata";
-//import filter from "lodash.filter";
 import { useNavigation } from "@react-navigation/native";
-
-import {fetchWeather} from '../util/http';
+import { API_KEY } from "../services/WeatherAPIKey";
+import citydata from "../data/citydata"; // Import the city data
 
 const SearchScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,34 +18,47 @@ const SearchScreen = () => {
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    async function getWeather(){
-      const weather = await fetchWeather();
-    }
-    getWeather();
-    setFullData(weather);
-    setFilteredData(weather);
-    //setFullData(citydata);
-    //setFilteredData(citydata);
+    // Set fullData to a list of city names initially
+    const cityNames = citydata.map((city) => ({
+      id: city.id,
+      name: city.name,
+    }));
+    setFullData(cityNames);
   }, []);
 
   const navigation = useNavigation();
 
-  const handleSearch = (query) => {
+  const handleSearch = async (query) => {
     setSearchQuery(query);
-    const formattedQuery = query.toLowerCase();
-    const filteredData = fullData.filter((city) => {
-      return city.name.toLowerCase('tr-TR').includes(formattedQuery);
-    });
-    setFilteredData(filteredData);
-  };
+    setIsLoading(true);
 
-  const contains = ({ name }, query) => {
-    if (name.toLowerCase().includes(query)) {
-      return true;
+    try {
+      const formattedQuery = query.toLowerCase();
+      const filteredCities = fullData.filter((city) =>
+        city.name.toLowerCase().includes(formattedQuery)
+      );
+
+      const updatedFilteredData = await Promise.all(
+        filteredCities.map(async (city) => {
+          const weatherResponse = await fetch(
+            `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city.name}&aqi=no`
+          );
+          const weatherJson = await weatherResponse.json();
+          return {
+            ...city,
+            temperature: weatherJson.current.temp_c,
+            state: weatherJson.current.condition.text,
+          };
+        })
+      );
+
+      setFilteredData(updatedFilteredData);
+    } catch (err) {
+      console.error(err);
     }
-    return false;
-  };
 
+    setIsLoading(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -84,7 +94,7 @@ const SearchScreen = () => {
                     cityName: item.name,
                     temperature: item.temperature,
                     state: item.state,
-                    forecast: item.forecast,
+                    forecast: item.forecast, // You can keep this if you still want to show some static forecast data
                   })
                 }
               >
@@ -92,6 +102,9 @@ const SearchScreen = () => {
                   <ListItem.Title style={styles.textCityName}>
                     {item.name}
                   </ListItem.Title>
+                  <ListItem.Subtitle style={styles.textCityTemp}>
+                    {item.temperature}°C, {item.state}
+                  </ListItem.Subtitle>
                 </ListItem.Content>
               </ListItem>
             </View>
@@ -133,6 +146,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     marginLeft: 10,
     fontWeight: "600",
+    color: "#fefefe",
+  },
+  textCityTemp: {
+    fontSize: 15,
+    marginLeft: 10,
     color: "#fefefe",
   },
 });

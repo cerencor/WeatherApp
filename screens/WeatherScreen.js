@@ -13,27 +13,31 @@ const WeatherScreen = ({ route }) => {
   const { cityName } = route.params;
 
   const [temperature, setTemperature] = useState(null);
-  //const [state, setState] = useState(null);
-  //const [forecast, setForecast] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [state, setState] = useState(null);
+  const [forecast, setForecast] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchWeather(cityName);
   }, [cityName]);
 
   const fetchWeather = async (cityName) => {
-    const weatherResponse = await axios(
-      `https://api.openweathermap.org/data/3.0/onecall?lat=33.44&lon=-94.04&exclude=hourly&appid={API_KEY}`
-    );
-    //https://api.openweathermap.org/data/3.0/onecall?lat=33.44&lon=-94.04&exclude=hourly,daily&appid={API key}
-    //https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={API key}
-    //const weatherResponse = await axios.get(
-    //`https://api.openweathermap.org/data/3.0/weather?q=${cityName}&appid=${API_KEY}&units=metric`
-    //);
-    const weatherJson = await weatherResponse.json();
-    console.log("Weather response:", weatherJson);
+    try {
+      const weatherResponse = await fetch(
+        `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${cityName}&aqi=no`
+      );
+      const weatherJson = await weatherResponse.json();
+      console.log("Weather response:", weatherJson);
 
-    setTemperature(weatherJson.main.temp);
-    //setState(weatherJson.weather[0].main);
+      setTemperature(weatherJson.current.temp_c);
+      setState(weatherJson.current.condition.text);
+      setIsLoading(false);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch weather data");
+      setIsLoading(false);
+    }
   };
 
   const getBackgroundColor = (temp) => {
@@ -43,32 +47,19 @@ const WeatherScreen = ({ route }) => {
     else return "#add8e6";
   };
 
-  const getIcon = (stt) => {
-    if (stt === "Sunny")
-      return (
-        <Icon name="sunny-outline" type="ionicon" size={40} color="white" />
-      );
-    else if (stt === "Cloudy")
-      return (
-        <Icon name="cloud-outline" type="ionicon" size={40} color="white" />
-      );
-    else if (stt === "Rainy")
-      return (
-        <Icon name="rainy-outline" type="ionicon" size={40} color="white" />
-      );
-    else if (stt === "Windy")
-      return (
-        <Icon
-          name="weather-windy"
-          type="material-community"
-          size={40}
-          color="white"
-        />
-      );
-    else
-      return (
-        <Icon name="snow-outline" type="ionicon" size={40} color="white" />
-      );
+  const getIcon = (state) => {
+    switch (state) {
+      case "Sunny":
+        return <Icon name="sunny-outline" type="ionicon" size={40} color="white" />;
+      case "Cloudy":
+        return <Icon name="cloud-outline" type="ionicon" size={40} color="white" />;
+      case "Rainy":
+        return <Icon name="rainy-outline" type="ionicon" size={40} color="white" />;
+      case "Windy":
+        return <Icon name="weather-windy" type="material-community" size={40} color="white" />;
+      default:
+        return <Icon name="snow-outline" type="ionicon" size={40} color="white" />;
+    }
   };
 
   const renderItem = ({ item }) => (
