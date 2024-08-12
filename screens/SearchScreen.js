@@ -8,7 +8,7 @@ import {
 import { SearchBar, ListItem } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { API_KEY } from "../services/WeatherAPIKey";
-import citydata from "../data/citydata"; // Import the city data
+import citydata from "../data/citydata";
 
 const SearchScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +18,6 @@ const SearchScreen = () => {
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    // Set fullData to a list of city names initially
     const cityNames = citydata.map((city) => ({
       id: city.id,
       name: city.name,
@@ -94,7 +93,7 @@ const SearchScreen = () => {
                     cityName: item.name,
                     temperature: item.temperature,
                     state: item.state,
-                    forecast: item.forecast, // You can keep this if you still want to show some static forecast data
+                    forecast: item.forecast,
                   })
                 }
               >
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#DFAC45",
     alignSelf: "flex-start",
     maxWidth: "90%",
-    borderRadius: 300,
+    borderRadius: 20,
     padding: 10,
     flexShrink: 1,
   },
